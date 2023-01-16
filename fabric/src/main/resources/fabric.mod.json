@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "limboauth-clientmod",
+  "version": "${version}",
+  "name": "LimboAuth ClientMod",
+  "description": "Implement auto-login with the LimboAuth plugin, the client mod and a custom launcher",
+  "authors": ["Elytrium (https://elytrium.net/)"],
+  "icon": "icon.png",
+  "license": "AGPL-3.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.elytrium.limboauth.clientmod.fabric.FabricMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.0.0",
+    "minecraft": ">=1.14.4",
+    "architectury": ">=0.0.0"
+  }
+}
