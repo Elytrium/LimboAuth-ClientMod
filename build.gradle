@@ -1,0 +1,76 @@
+plugins {
+    id("checkstyle")
+    id("architectury-plugin").version("3.4-SNAPSHOT")
+    id("com.github.spotbugs").version("5.0.13").apply(false)
+    id("org.cadixdev.licenser").version("0.6.1").apply(false)
+    id("dev.architectury.loom").version("0.12.0-SNAPSHOT").apply(false)
+}
+
+architectury {
+    minecraft = rootProject.minecraft_version
+}
+
+subprojects {
+    apply(plugin: "dev.architectury.loom")
+
+    loom {
+        silentMojangMappingsLicense()
+    }
+
+    dependencies {
+        minecraft("com.mojang:minecraft:${rootProject.minecraft_version}")
+        mappings(loom.officialMojangMappings())
+    }
+}
+
+allprojects {
+    apply(plugin: "java")
+    apply(plugin: "architectury-plugin")
+    apply(plugin: "checkstyle")
+    apply(plugin: "com.github.spotbugs")
+    apply(plugin: "org.cadixdev.licenser")
+
+    setArchivesBaseName(rootProject.archives_base_name)
+    setVersion(rootProject.mod_version)
+    setGroup("net.elytrium")
+
+    tasks.withType(JavaCompile) {
+        options.setEncoding("UTF-8")
+        options.setRelease(8)
+    }
+
+    java {
+        withSourcesJar()
+    }
+
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        maven {
+            setName("elytrium-repo")
+            setUrl("https://maven.elytrium.net/repo/")
+        }
+    }
+
+    checkstyle {
+        setToolVersion("10.3")
+        setConfigFile(file("${this.getRootDir()}/.config/checkstyle/checkstyle.xml"))
+        setConfigProperties("configDirectory": "${this.getRootDir()}/.config/checkstyle")
+        setMaxErrors(0)
+        setMaxWarnings(0)
+    }
+
+    spotbugs {
+        setExcludeFilter(file("${this.getRootDir()}/.config/spotbugs/suppressions.xml"))
+    }
+
+    spotbugsMain {
+        reports {
+            html {
+                getRequired().set(true)
+                getOutputLocation().set(file("${this.getBuildDir()}/reports/spotbugs/main/spotbugs.html"))
+                setStylesheet("fancy-hist.xsl")
+            }
+        }
+    }
+}
